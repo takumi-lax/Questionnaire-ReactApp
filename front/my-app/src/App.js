@@ -2,7 +2,6 @@ import React from 'react';
 import './App.css';
 import Axios from 'axios';
 
-
 //function App() {
 export class App extends React.Component {
   constructor(props) {
@@ -31,7 +30,7 @@ export class App extends React.Component {
   }
 
 
-  wakati = text => {
+  wakati = (text) => {
     //console.log("input text >>"+text)
     Axios.post('http://127.0.0.1:5000/wakati', {
       post_text: text
@@ -40,7 +39,7 @@ export class App extends React.Component {
     })
   };
 
-  handleSubmit = event => {
+  handleSubmit = (event) => {
     this.wakati(this.state.value)
     event.preventDefault();
   };
