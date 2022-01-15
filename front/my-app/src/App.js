@@ -1,52 +1,50 @@
+// 必要なモジュールのインポート
 import React from 'react';
 import './App.css';
-import Axios from 'axios';
-
-//function App() {
-export class App extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = {value: ''};
-
-    this.handleChange = this.handleChange.bind(this);
-    this.handleSubmit = this.handleSubmit.bind(this);
-  }
-
-  render() {
-    return (
-      <div className="App">
-        <header className="App-header">
-          <h1>text parser</h1>
-          <form onSubmit={this.handleSubmit}>
-            <label>
-              <textarea name="text" cols="80" rows="4" value={this.state.value} onChange={this.handleChange} />
-            </label>
-            <br/>
-            <input type="submit" value="Parse" />
-          </form>
-        </header>
-      </div>
-    );
-  }
+// 使用するコンポーネント
+import MyRouter from './components/MyRouter';
+import HeaderBar from './components/HeaderBar';
+import { makeStyles } from '@material-ui/core';
+import firebase from "firebase";
 
 
-  wakati = (text) => {
-    //console.log("input text >>"+text)
-    Axios.post('http://127.0.0.1:5000/wakati', {
-      post_text: text
-    }).then(function(res) {
-      alert(res.data.result);
-    })
-  };
+// firebaseの設定
+var firebaseConfig = {
+  apiKey: "foo",
+  authDomain: "foo",
+  databaseURL: "foo",
+  projectId: "foo",
+  storageBucket: "foo",
+  messagingSenderId: "foo",
+  appId: "foo",
+  measurementId: "foo"
+};
 
-  handleSubmit = (event) => {
-    this.wakati(this.state.value)
-    event.preventDefault();
-  };
+if (!firebase.apps.length) {
+  firebase.initializeApp(firebaseConfig);
+}else {
+  firebase.app();
+}
+firebase.analytics();
 
-  handleChange = event => {
-    this.setState({ value: event.target.value });
-  };
+// CSS in JS
+const useStyles = makeStyles({
+  root: {
+    height: "100%",
+    width: "100%",
+    display: "grid",
+    "grid-template-rows": "1fr 20fr",
+  },
+});
+
+function App() {
+  const classes = useStyles();
+  return (
+    <div className={classes.root}>
+      <HeaderBar/>
+      <MyRouter/>
+    </div>
+  );
 }
 
 export default App;
