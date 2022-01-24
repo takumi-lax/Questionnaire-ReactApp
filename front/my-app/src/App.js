@@ -1,33 +1,30 @@
-// 必要なモジュールのインポート
 import React from 'react';
 import './App.css';
-// 使用するコンポーネント
 import MyRouter from './components/MyRouter';
 import HeaderBar from './components/HeaderBar';
 import { makeStyles } from '@material-ui/core';
-import firebase from "firebase";
+// import firebase from "firebase/compat";
 
 
 // firebaseの設定
-var firebaseConfig = {
-  apiKey: "foo",
-  authDomain: "foo",
-  databaseURL: "foo",
-  projectId: "foo",
-  storageBucket: "foo",
-  messagingSenderId: "foo",
-  appId: "foo",
-  measurementId: "foo"
-};
+// var firebaseConfig = {
+//   apiKey: "foo",
+//   authDomain: "foo",
+//   databaseURL: "foo",
+//   projectId: "foo",
+//   storageBucket: "foo",
+//   messagingSenderId: "foo",
+//   appId: "foo",
+//   measurementId: "foo"
+// };
 
-if (!firebase.apps.length) {
-  firebase.initializeApp(firebaseConfig);
-}else {
-  firebase.app();
-}
-firebase.analytics();
+// if (!firebase.apps.length) {
+//   firebase.initializeApp(firebaseConfig);
+// }else {
+//   firebase.app();
+// }
+// firebase.analytics();
 
-// CSS in JS
 const useStyles = makeStyles({
   root: {
     height: "100%",

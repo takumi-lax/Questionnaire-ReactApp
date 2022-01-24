@@ -2,7 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import { withRouter } from 'react-router';
 import { Button, makeStyles } from '@material-ui/core';
-import firebase from 'firebase/app'
+// import firebase from 'firebase/compat/app'
 
 const useStyles = makeStyles({
   root: {
@@ -23,9 +23,11 @@ const Home = props => {
 
   // useState関数の返却値は配列の形で、1つ目にState変数、2つ目にそのStateを更新する関数が設定される
   // 引数に何も指定しないとき、初期値はundefinedになる
-  const [numberOfImagesAnsweredToday, setNumberOfImagesAnsweredToday] = useState();
+  const [numberOfImagesAnsweredToday, setNumberOfImagesAnsweredToday] = useState(0);
   // useState(false)は、isButtonAnabledの初期値をfalseに設定したということ
-  const [isButtonAnabled, setIsButtonAnabled] = useState(false);
+  // const [isButtonAnabled, setIsButtonAnabled] = useState(true);
+
+  const isButtonAnabled = true;
   
   // useEffect:「ある値が変わったときに限り、ある処理を実行する」機能
   // 第1引数:実行する関数、第2引数:[依存する値]
@@ -34,25 +36,27 @@ const Home = props => {
   // コンポーネントは再レンダリングを何度も繰り返しており、そのたびにこの処理を実行していたら時間が無駄にかかるなーというとき
   // この値が変わったときだけ再レンダリングするようにしたいなってときに使う！！
   useEffect(() => {
-    const date = new Date();
-    const currentYear = date.getFullYear();
-    const currentMonth = date.getMonth();
-    const currentDate = date.getDate();
-    const _date = new Date(currentYear, currentMonth, currentDate, 0, 0, 0);
-    const currentDateStartTime = _date.getTime()
+    // const date = new Date();
+
+    // const currentYear = date.getFullYear();
+    // const currentMonth = date.getMonth();
+    // const currentDate = date.getDate();
+    // const _date = new Date(currentYear, currentMonth, currentDate, 0, 0, 0);
+    // const currentDateStartTime = _date.getTime();
+
 
     // ------------------- ここよくわかってない -------------------
     // firebase
-    firebase.database().ref('answers').once('value').then( snapshot => {
-      let i = 0;
-      snapshot.forEach( childSnapshot  => {
-        if (childSnapshot.val().submitted_at > currentDateStartTime) {
-          i += 1;
-        }
-      });
-      setNumberOfImagesAnsweredToday(i);
-      setIsButtonAnabled(true);
-    });
+    // firebase.database().ref('answers').once('value').then( snapshot => {
+    //   let i = 0;
+    //   snapshot.forEach( childSnapshot  => {
+    //     if (childSnapshot.val().submitted_at > currentDateStartTime) {
+    //       i += 1;
+    //     }
+    //   });
+    //   setNumberOfImagesAnsweredToday(i);
+    //   setIsButtonAnabled(true);
+    // });
   }, []);
 
 
@@ -72,6 +76,7 @@ const Home = props => {
   const handleStartButtonClick = () => {
     if (numberOfImagesAnsweredToday === 0) {
       startPreQuestionnaire();
+      setNumberOfImagesAnsweredToday(1);
     } else {
       startQuestionnaire();
     }
@@ -82,6 +87,8 @@ const Home = props => {
       pathname: "/result",
     });
   };
+
+
 
   return (
     <div className={classes.root}>
