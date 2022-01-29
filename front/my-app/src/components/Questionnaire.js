@@ -68,9 +68,17 @@ const Questionnaire = props =>  {
   const [answers, setAnswers] = useState(initialAnswers);
   // const [themeIndex, setThemeIndex] = useState(0);
   const [imageId, setImageId] = useState();
-  const [imagePath, setImagePath] = useState()
+  const [imagePath, setImagePath] = useState();
+  
   const [startTime, setStartTime] = useState(0);
   const [numberOfImagesAnsweredToday, setNumberOfImagesAnsweredToday] = useState(0);
+
+  // const [no_answered_number, setNoAnsweredNumber] = useState()
+  const [aki_no_answered_number, setAkiNoAnsweredNumber] = useState()
+  const [houki_no_answered_number, setHoukiNoAnsweredNumber] = useState()
+  const [uwabaki_no_answered_number, setUwabakiNoAnsweredNumber] = useState()
+
+
   // const [elapsedTime, setElapsedTime] = useState(0)
 
   // const [numberOfImagesAnswered, setNumberOfImagesAnswered] = useState();
@@ -150,14 +158,6 @@ const Questionnaire = props =>  {
   //   });
   // };
 
-  const check = (remainingnumber) => {
-    if (remainingnumber === 0){
-      props.history.push({
-        pathname: "/done",
-      });
-    }
-  };
-
   // async function save() {
   //   var data = {};
   //   const date = new Date();
@@ -196,7 +196,7 @@ const Questionnaire = props =>  {
     getAndSetImageId();
     // getAndSetStartTime();
     // check()は残りの枚数をチェックして、0枚になったらDoneThemeに移動する関数
-    await check();
+    await check(aki_no_answered_number,houki_no_answered_number,uwabaki_no_answered_number);
     setNumberOfImagesAnsweredToday(numberOfImagesAnsweredToday+1)
     // await save();
   };
@@ -212,9 +212,36 @@ const Questionnaire = props =>  {
         imageId : imageId,
         answer_time : elapsedTime,
       }).then(function(res) {
-        const no_answered_number = res.data["non_answered_number"];
-        alert(no_answered_number);
+        // const no_answered_number = res.data["non_answered_number"];
+        const aki_no_answered_number = res.data["aki"];
+        const houki_no_answered_number = res.data["houki"];
+        const uwabaki_no_answered_number = res.data["uwabaki"];
+        // setNoAnsweredNumber(no_answered_number);
+        setAkiNoAnsweredNumber(aki_no_answered_number);
+        setHoukiNoAnsweredNumber(houki_no_answered_number);
+        setUwabakiNoAnsweredNumber(uwabaki_no_answered_number);
+        // alert(no_answered_number);
       })
+  };
+
+  const check = (aki,houki,uwabaki) => {
+    if (aki === 1){
+      props.history.push({
+        pathname: "/done",
+      });
+    }
+
+    else if (houki === 1){
+      props.history.push({
+        pathname: "/done",
+      });
+    }
+
+    else if (uwabaki === 1){
+      props.history.push({
+        pathname: "/done",
+      });
+    }
   };
 
   const getAndSetImageId = () => {
@@ -248,8 +275,9 @@ const Questionnaire = props =>  {
 
           {/* <b><span role="img" aria-label="_">✨✨</span>　累計回答数　{numberOfImagesAnswered}　<span role="img" aria-label="_">✨✨</span></b> */}
 
-          <b><span role="img" aria-label="_">✨</span>　本日の回答数　{numberOfImagesAnsweredToday}　<span role="img" aria-label="_">✨</span></b>
+          <b><span role="img" aria-label="_">✨</span>　今日の回答数　{numberOfImagesAnsweredToday}　<span role="img" aria-label="_">✨</span></b>
           
+          {/* <b><span role="img" aria-label="_">✨</span>　このテーマの残り枚数　{no_answered_number}　<span role="img" aria-label="_">✨</span></b> */}
         </div>
 
 

@@ -3,8 +3,10 @@ import json
 import csv
 import os
 dic = {}
-files = os.listdir("./images")
+# files = os.listdir("./images")
+files = os.listdir("./images2")
 files = [os.path.splitext(file)[0] for  file  in files if not file.startswith('.')]
+
 # print(files)
 for file in files:
     dic[file] = {"answered":0,
@@ -18,8 +20,6 @@ for file in files:
                                             "7":-1,
                                             "8":-1,
                                             "answer_time":-1}}
-
-
 
 with open('dic_bin.pickle', 'wb') as f:
     pickle.dump(dic, f)
