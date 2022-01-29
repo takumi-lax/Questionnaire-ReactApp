@@ -1,6 +1,6 @@
 import pickle
 import json
-
+import csv
 import os
 dic = {}
 files = os.listdir("./images")
@@ -16,7 +16,8 @@ for file in files:
                                             "5":-1,
                                             "6":-1,
                                             "7":-1,
-                                            "8":-1,}}
+                                            "8":-1,
+                                            "answer_time":-1}}
 
 
 
@@ -26,3 +27,10 @@ with open('dic_bin.pickle', 'wb') as f:
 with open('dic.json', 'w') as f:
     json.dump(dic,f, sort_keys=True, indent=4)
 
+with open('PreQuestionnaireResults.csv', 'w') as f:
+    writer = csv.writer(f)
+    writer.writerow(["selectedAt","value1_taityou_id9","value_kibunn_id10"])
+
+with open('QuestionnaireResults.csv', 'w') as f:
+    writer = csv.writer(f)
+    writer.writerow(["imageId","time","ans_3","ans_4","ans_5","ans_6","ans_7","ans_8","answer_time[ms]"])

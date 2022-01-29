@@ -9,7 +9,6 @@ import random
 from PIL import Image
 from io import BytesIO
 import json
-# import mysql.connector
 import datetime
 
 host = 'localhost'
@@ -29,28 +28,6 @@ def hello():
         'status': 'OK'
     }
     return jsonify(data)
-
-# @app.route("/posttest", methods=['GET','POST'])
-# def posttest():
-#     if request.method == 'POST':
-#         data = request.get_json()
-#         print(data)
-#         dataKeys = list(data.keys())
-#         dataValues = list(data.values())
-#         print(dataKeys,dataValues)
-        
-#         with open('QuestionnaireResults.csv', 'a') as f:
-#             writer = csv.writer(f)
-#             # writer.writerow(dataKeys)
-#             writer.writerow(dataValues)
-
-#         with open('QuestionnaireResults.csv') as f:
-#             print(f.read())
-
-#         res = data['post_text1']
-#         response = {'result': res}
-#         # print(response)
-#     return jsonify(response)
 
 @app.route("/prequestionnaire_test", methods=['GET','POST'])
 def prequestionnaire_test():
@@ -99,9 +76,13 @@ def questionnaire_test():
         data = request.get_json()
 
         image_id = data["imageId"]
+        answer_time = data["answer_time"]
+        
         data = data["res"]
+        
         print(f"{image_id=}")
         print(f"{data=}")
+        print(f"{answer_time=}")
         # print(type(data))
         with open('dic_bin.pickle', 'rb') as f:
             dic = pickle.load(f)
@@ -119,24 +100,46 @@ def questionnaire_test():
             # print(f"{dic[image_id]=}")
             dic[image_id]["questionnaire_anseweres"][str(k)] = v
             # print(k,v)
+        dic[image_id]["questionnaire_anseweres"]["answer_time"] = answer_time
 
-        dataValues = [image_id,datetime.datetime.fromtimestamp(int(time)/1000),ansdic[3],ansdic[4],ansdic[5],ansdic[6],ansdic[7],ansdic[8]]
+        dataValues = [image_id,datetime.datetime.fromtimestamp(int(time)/1000),ansdic[3],ansdic[4],ansdic[5],ansdic[6],ansdic[7],ansdic[8],answer_time]
         print(dataValues)
+        dic[image_id]["answered"] += 1
+
         with open('QuestionnaireResults.csv', 'a') as f:
             writer = csv.writer(f)
             # writer.writerow(dataKeys)
             writer.writerow(dataValues)
 
-        with open('dic_bin.txt', 'wb') as f:
+        with open('dic_bin.pickle', 'wb') as f:
             pickle.dump(dic, f)
         with open('dic.json', 'w') as f:
             json.dump(dic,f, sort_keys=True, indent=4)
         # with open('QuestionnaireResults.csv') as f:
         #     print(f.read())
-        response = {'message': 'OK'}
+
+        non_answered_number = len([k for k,v in dic.items() if v["answered"] == 0])
+        response = {'non_answered_number': non_answered_number}
         # print(response)
     return jsonify(response)
 
+# @app.route("/answer_time", methods=['GET','POST'])
+# def answer_time():
+#     if request.method == 'POST':
+#         data = request.get_json()
+
+#         image_id = data["imageId"]
+#         data = data["answer_time"]
+#         print(f"{image_id=}")
+#         print(f"{data=}")
+
+#         dataValues = [image_id,data]
+#         print(dataValues)
+#         with open('AnswerTime.csv', 'a') as f:
+#             writer = csv.writer(f)
+#             writer.writerow(dataValues)
+#         response = {'message': 'OK'}
+#     return jsonify(response)
 
 # @app.route('/questionnaires', methods=['GET', 'POST'])
 # def get_questionnaire():
@@ -243,7 +246,8 @@ def get_imageid():
             dic = pickle.load(f)
         # 未回答の画像のkeyのリストを取得
         non_answered_indices = [k for k,v in dic.items() if v["answered"] == 0]
-        random.shuffle(non_answered_indices)
+        non_answered_indices.sort()
+        # random.shuffle(non_answered_indices)
         image_id = non_answered_indices[0]
 
         image = {

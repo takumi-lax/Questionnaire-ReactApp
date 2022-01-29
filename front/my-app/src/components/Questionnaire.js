@@ -16,13 +16,16 @@ const useStyles = makeStyles({
     alignItems: "center",
   },
   left: {
-    width: "100%",
-    height: "100%",
-    display: "flex",
-    flexDirection: "column",
-    alignItems: "center",
-    justifyContent: "center",
-    objectFit: "contain",
+    // width: "100%",
+    // height: "100%",
+    width: "500px",
+    height: "600px",
+    display: "block",
+    margin: "auto"
+    // flexDirection: "column",
+    // alignItems: "center",
+    // justifyContent: "center",
+    // objectFit: "contain",
   },
   right: {
     width: "90%",
@@ -68,32 +71,47 @@ const Questionnaire = props =>  {
   const [imagePath, setImagePath] = useState()
   const [startTime, setStartTime] = useState(0);
   const [numberOfImagesAnsweredToday, setNumberOfImagesAnsweredToday] = useState(0);
-  const [numberOfImagesAnswered, setNumberOfImagesAnswered] = useState();
+  // const [elapsedTime, setElapsedTime] = useState(0)
+
+  // const [numberOfImagesAnswered, setNumberOfImagesAnswered] = useState();
 
   useEffect(() => {
     // updateThemeIndex();
-    getAndSetStartTime();
-    getCurrentAchievement();
-    getAndSetImageId();
-  }, []);
-
-  const getAndSetStartTime = () => {
+    // getAndSetStartTime();
+    // getCurrentAchievement();
     const date = new Date();
     const currentTime = date.getTime();
     setStartTime(currentTime);
-  };
+    getAndSetImageId();
+  }, []);
+
+
+  // const getAndSetStartTime = () => {
+  //   const date = new Date();
+  //   const currentTime = date.getTime();
+  //   const elapsedTime = currentTime - startTime;
+  //   setStartTime(currentTime);
+  //   setElapsedTime(elapsedTime);
+  //   Axios.post('http://127.0.0.1:5000/answer_time', {
+  //     answer_time : elapsedTime,
+  //     imageId : imageId,
+  //   }).then(function(res) {
+  //     console.log("OK");
+  //   })
+  //   // alert(startTime);
+  // };
 
   const resetAnswers = () => {
     setAnswers(initialAnswers);
   };
 
-  const getCurrentAchievement = () => {
-    const date = new Date();
-    const currentYear = date.getFullYear();
-    const currentMonth = date.getMonth();
-    const currentDate = date.getDate();
-    const _date = new Date(currentYear, currentMonth, currentDate, 0, 0, 0);
-    const currentDateStartTime = _date.getTime()
+  // const getCurrentAchievement = () => {
+  //   const date = new Date();
+  //   const currentYear = date.getFullYear();
+  //   const currentMonth = date.getMonth();
+  //   const currentDate = date.getDate();
+  //   const _date = new Date(currentYear, currentMonth, currentDate, 0, 0, 0);
+  //   const currentDateStartTime = _date.getTime()
     
 
     // firebase.database().ref('answers').once('value').then( snapshot => {
@@ -106,7 +124,7 @@ const Questionnaire = props =>  {
     //   setNumberOfImagesAnsweredToday(i);
     //   setNumberOfImagesAnswered(snapshot.numChildren());
     // });
-  };
+  // };
 
   // async function updateThemeIndex() {
   //   for (let i = 0; i < drawingThemes.length; i++) {
@@ -132,16 +150,13 @@ const Questionnaire = props =>  {
   //   });
   // };
 
-  // async function check() {
-  //   await firebase.database().ref('images').orderByChild('theme').equalTo(drawingThemes[themeIndex]).once('value').then( snapshot => {
-  //     var notAnsweredImageIds = Object.keys(snapshot.val()).filter( key  => !snapshot.val()[key].submitted_at);
-  //     if (notAnsweredImageIds.length === 0) {
-  //       props.history.push({
-  //         pathname: "/done",
-  //       });
-  //     }
-  //   });
-  // };
+  const check = (remainingnumber) => {
+    if (remainingnumber === 0){
+      props.history.push({
+        pathname: "/done",
+      });
+    }
+  };
 
   // async function save() {
   //   var data = {};
@@ -176,23 +191,29 @@ const Questionnaire = props =>  {
   async function handleClick() {
     setIsSubmitButtonAnabled(false);
     resetAnswers();
-    getCurrentAchievement();
+    // getCurrentAchievement();
+    await save(answers);
     getAndSetImageId();
-    getAndSetStartTime();
+    // getAndSetStartTime();
     // check()は残りの枚数をチェックして、0枚になったらDoneThemeに移動する関数
-    // await check();
-    save(answers);
+    await check();
     setNumberOfImagesAnsweredToday(numberOfImagesAnsweredToday+1)
     // await save();
   };
 
   const save = (answers) => {
+    const date = new Date();
+    const currentTime = date.getTime();
+    const elapsedTime = currentTime - startTime;
+    setStartTime(currentTime);
+    // setElapsedTime(elapsedTime);
     Axios.post('http://127.0.0.1:5000/questionnaire_test', {
         res : answers,
-        imageId : imageId
+        imageId : imageId,
+        answer_time : elapsedTime,
       }).then(function(res) {
-        // alert(res.data.result);
-        console.log("OK");
+        const no_answered_number = res.data["non_answered_number"];
+        alert(no_answered_number);
       })
   };
 
@@ -210,7 +231,7 @@ const Questionnaire = props =>  {
       setImagePath(res["image"]["src"]);
     
       // alert(JSON.stringify(imageId));
-      alert(JSON.stringify(res["image"]["src"]));
+      // alert(JSON.stringify(res["image"]["src"]));
     });
   }
 
@@ -225,8 +246,10 @@ const Questionnaire = props =>  {
 
         <div className={classes.currentAchievement}>
 
-          <b><span role="img" aria-label="_">✨✨</span>　累計回答数　{numberOfImagesAnswered}　<span role="img" aria-label="_">✨✨</span></b>
+          {/* <b><span role="img" aria-label="_">✨✨</span>　累計回答数　{numberOfImagesAnswered}　<span role="img" aria-label="_">✨✨</span></b> */}
+
           <b><span role="img" aria-label="_">✨</span>　本日の回答数　{numberOfImagesAnsweredToday}　<span role="img" aria-label="_">✨</span></b>
+          
         </div>
 
 

@@ -1,6 +1,6 @@
-images
-PreQuestionnaireResults.csv
-QuestionnaireResults.csv
 .DS_Store
-dic_bin.txt
-dic.json
+# PreQuestionnaireResults.csv
+# QuestionnaireResults.csv
+images
+# dic_bin.txt
+# dic.json
