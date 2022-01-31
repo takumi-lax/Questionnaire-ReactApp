@@ -53,16 +53,9 @@ const useStyles = makeStyles({
   button: {
     flex: "0.3 0 auto",
   },
-  button2: {
-    top: 40,
-    right: 20,
-    bottom: 'auto',
-    left: 'auto',
-    position: 'fixed',
-  },
 });
 
-const Questionnaire = props =>  {
+const ReQuestionnaire = props =>  {
 
   const classes = useStyles();
 
@@ -205,7 +198,13 @@ const Questionnaire = props =>  {
     // check()は残りの枚数をチェックして、0枚になったらDoneThemeに移動する関数
     await check(aki_no_answered_number,houki_no_answered_number,uwabaki_no_answered_number);
     setNumberOfImagesAnsweredToday(numberOfImagesAnsweredToday+1)
-    // await save();
+    startResult();
+  };
+
+  const startResult = () => {
+    props.history.push({
+      pathname: "/result",
+    });
   };
 
   const save = (answers) => {
@@ -219,15 +218,12 @@ const Questionnaire = props =>  {
         imageId : imageId,
         answer_time : elapsedTime,
       }).then(function(res) {
-        // const no_answered_number = res.data["non_answered_number"];
         const aki_no_answered_number = res.data["aki"];
         const houki_no_answered_number = res.data["houki"];
         const uwabaki_no_answered_number = res.data["uwabaki"];
-        // setNoAnsweredNumber(no_answered_number);
         setAkiNoAnsweredNumber(aki_no_answered_number);
         setHoukiNoAnsweredNumber(houki_no_answered_number);
         setUwabakiNoAnsweredNumber(uwabaki_no_answered_number);
-        // alert(no_answered_number);
       })
   };
 
@@ -252,50 +248,21 @@ const Questionnaire = props =>  {
   };
 
   const getAndSetImageId = () => {
-    Axios.get('http://127.0.0.1:5000/image',{
-    }).then(function (response) {
-      const res = response.data;
-      // alert(JSON.stringify(response.data));
-      // alert(JSON.stringify(res["image"]["id"]));
-      
-      setImageId(res["image"]["id"]);
-      // const imageId = res["image"]["id"]
-      // const imagepath = `http://127.0.0.1:5000/image/${imageId}`;
-      // setImagePath(imagepath);
-      setImagePath(res["image"]["src"]);
-    
-      // alert(JSON.stringify(imageId));
-      // alert(JSON.stringify(res["image"]["src"]));
-    });
-  }
-
-  const handleClick2 = () => {
-      startResult();
-  };
-
-  const startResult = () => {
-    props.history.push({
-      pathname: "/result",
-    });
-  };
-
+      const image_id = props.location.state["image_id"];
+      // alert(image_id);
+      setImageId(image_id);
+      // 文字列にJavascript入れるときはバッククォーテーションでかこむ！！
+      setImagePath(`http://127.0.0.1:5000/image/${image_id}`);
+    };
 
   return (
     <div className={classes.root}>
-
-      {/* {imageId !== undefined?<img src="http://127.0.0.1:5000/image" className={classes.left} alt={imageId}/>:<div className={classes.left}>Loading...</div>} */}
-      {/* <img src="http://127.0.0.1:5000/image/${imageId}.jpg" className={classes.left} alt={imageId}/> */}
 
       <img src={imagePath} className={classes.left} alt={imageId}/>
       <div className={classes.right}>
 
         <div className={classes.currentAchievement}>
 
-          {/* <b><span role="img" aria-label="_">✨✨</span>　累計回答数　{numberOfImagesAnswered}　<span role="img" aria-label="_">✨✨</span></b> */}
-
-          <b><span role="img" aria-label="_">✨</span>　今日の回答数　{numberOfImagesAnsweredToday}　<span role="img" aria-label="_">✨</span></b>
-          
-          {/* <b><span role="img" aria-label="_">✨</span>　このテーマの残り枚数　{no_answered_number}　<span role="img" aria-label="_">✨</span></b> */}
         </div>
 
 
@@ -322,17 +289,7 @@ const Questionnaire = props =>  {
           onClick={handleClick}
           disabled={!isSubmitButtonAnabled}
         >
-          次へ
-        </Button>
-
-        <Button
-          variant="outlined"
-          color="primary"
-          className={classes.button2}
-          onClick={handleClick2}
-          // disabled={!isSubmitButtonAnabled}
-        >
-          回答確認
+          回答修正
         </Button>
 
       </div>
@@ -340,4 +297,4 @@ const Questionnaire = props =>  {
   );
 }
 
-export default Questionnaire;
+export default ReQuestionnaire;

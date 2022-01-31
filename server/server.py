@@ -57,6 +57,7 @@ def questionnaire_test():
         data = request.get_json()
         image_id = data["imageId"]
         answer_time = data["answer_time"]
+
         
         data = data["res"]
         
@@ -67,7 +68,7 @@ def questionnaire_test():
         with open('dic_bin.pickle', 'rb') as f:
             dic = pickle.load(f)
 
-        dic[image_id]["answered"] = 1
+        # dic[image_id]["answered"] = 1
         
         ansdic = {}
         time = 0
@@ -83,6 +84,7 @@ def questionnaire_test():
             dic[image_id]["questionnaire_anseweres"][str(k)] = v
             # print(k,v)
         dic[image_id]["questionnaire_anseweres"]["answer_time"] = answer_time
+        dic[image_id]["questionnaire_anseweres"]["time"] = str(datetime.datetime.fromtimestamp(int(time)/1000))
 
         dataValues = [image_id,datetime.datetime.fromtimestamp(int(time)/1000),ansdic[3],ansdic[4],ansdic[5],ansdic[6],ansdic[7],ansdic[8],answer_time]
 
@@ -188,37 +190,79 @@ def questionnaire_test():
 #         response = {'questionnaires': questionnaires}
 #         return jsonify(response)
 
-# @app.route('/answers', methods=['GET', 'POST'])
-# def save():
-#     if request.method == 'POST':
-#         request_json = request.json
-#         image_id = request_json['imageId']
-#         with open('dic_bin.pickle', 'rb') as f:
-#             dic = pickle.load(f)
-#         # answered frg を1にする
-#         dic[image_id]["answered"] = 1
+@app.route('/answers', methods=['GET', 'POST'])
+def get_answers():
+    if request.method == 'GET':
 
-#         answers = request_json['answers']
-#         for answer in answers:
-#             questionnaire_id = answer['questionnaireId']
-#             value = answer['value']
-#             dic[image_id][questionnaire_id] = value
-#             # statement = '''
-#             #     INSERT INTO answers (image_id, questionnaire_id, value)
-#             #         VALUES ({image_id}, {questionnaire_id}, {value})
-#             #             ON DUPLICATE KEY UPDATE value = {value};
-#             # '''.format(
-#             #         image_id=image_id,
-#             #         questionnaire_id=questionnaire_id,
-#             #         value=value
-#             #     )
-#             # cur.execute(statement)
-#             # conn.commit()
-#         # pickle save
+        with open('dic_bin.pickle', 'rb') as f:
+            dic = pickle.load(f)
 
-#         response = {'message': 'OK'}
-#         # conn.close()
-#         return jsonify(response)
+        answers = {}
+        for k in dic.keys():
+            if dic[k]["answered"] != 0:
+                answers[k] = {
+                    "image_id":k,
+                    "answer_time" :dic[k]["questionnaire_anseweres"]["answer_time"],
+                    "time" :dic[k]["questionnaire_anseweres"]["time"],
+                    "contents":[
+                        {
+                        "questionaire_id":3,
+                        "value":dic[k]["questionnaire_anseweres"]["3"],
+                        },
+                        {
+                        "questionaire_id":4,
+                        "value":dic[k]["questionnaire_anseweres"]["4"],
+                        },
+                        {
+                        "questionaire_id":5,
+                        "value":dic[k]["questionnaire_anseweres"]["5"],
+                        },
+                        {
+                        "questionaire_id":6,
+                        "value":dic[k]["questionnaire_anseweres"]["6"],
+                        },
+                        {
+                        "questionaire_id":7,
+                        "value":dic[k]["questionnaire_anseweres"]["7"],
+                        },
+                        {
+                        "questionaire_id":8,
+                        "value":dic[k]["questionnaire_anseweres"]["8"],
+                        },
+                    ],
+                }
+        return jsonify(answers)
+
+
+
+        # request_json = request.json
+        # image_id = request_json['imageId']
+        # with open('dic_bin.pickle', 'rb') as f:
+        #     dic = pickle.load(f)
+        # # answered frg を1にする
+        # dic[image_id]["answered"] = 1
+
+        # answers = request_json['answers']
+        # for answer in answers:
+        #     questionnaire_id = answer['questionnaireId']
+        #     value = answer['value']
+        #     dic[image_id][questionnaire_id] = value
+            # statement = '''
+            #     INSERT INTO answers (image_id, questionnaire_id, value)
+            #         VALUES ({image_id}, {questionnaire_id}, {value})
+            #             ON DUPLICATE KEY UPDATE value = {value};
+            # '''.format(
+            #         image_id=image_id,
+            #         questionnaire_id=questionnaire_id,
+            #         value=value
+            #     )
+            # cur.execute(statement)
+            # conn.commit()
+        # # pickle save
+
+        # response = {'message': 'OK'}
+        # # conn.close()
+        # return jsonify(response)
 
 @app.route('/image', methods=['GET'])
 def get_imageid():
@@ -256,8 +300,8 @@ def get_imageid():
 def get_image(image_id):
     if request.method == 'GET':
 
-        # img = Image.open("./images/{}.jpg".format(image_id))
-        img = Image.open("./images2/{}.jpg".format(image_id))
+        img = Image.open("./images/{}.jpg".format(image_id))
+        # img = Image.open("./images2/{}.jpg".format(image_id))
 
         img_io = BytesIO()
         img.save(img_io, 'JPEG', quality=95)
